@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# ABSTRACT: 
+# ABSTRACT: Run OCR and rename on input PDF files
 
 use FindBin;
 use lib "$FindBin::Bin/../lib";
