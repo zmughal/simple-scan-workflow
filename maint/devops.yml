@@ -1,0 +1,4 @@
+native:
+  macos-homebrew:
+    packages:
+      - fswatch
