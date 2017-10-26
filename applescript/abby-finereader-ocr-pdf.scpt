@@ -79,21 +79,21 @@ tell application "FineReader OCR Pro"
 end tell
 
 if sandb then
-   
+
    tell application "FineReader OCR Pro"
        set outputDir to get output dir
    end tell
-   
+
    --set POSIX_exportFile to ((outputDir as string) & exportFileName)
    set POSIX_exportDir to POSIX file exportDir
-   
+
    tell application "Finder"
        set the_files to files of folder outputDir
        repeat with this_file in the_files
            duplicate this_file to POSIX_exportDir replacing yes
        end repeat
    end tell
-   
+
 end if
 
 -- END moving exported file --

@@ -104,7 +104,7 @@ sub apply_rename {
 
 	my $title = min_by { length $_ }
 		grep { $_ !~ /^\s*$/ }
-		map { s/\n|(^\s+)|(\s+$)//gr } 
+		map { s/\n|(^\s+)|(\s+$)//gr }
 		($line_title, $char_title);
 
 	my $new_filename = $input_file->basename( PDF_EXTENSION_W_DOT );
