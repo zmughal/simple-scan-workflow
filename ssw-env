@@ -1,0 +1,6 @@
+#!/bin/sh
+
+CURDIR=`dirname "$0"`
+eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
+
+$CURDIR/bin/ssw.pl "$@"

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+CURDIR=`dirname "$0"`
+eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
+
+if screen -ls | grep -q 'simple-scan-workflow'; then
+	true;
+else
+	screen -S simple-scan-workflow -d -m $CURDIR/bin/run.sh ~/Documents/ScanSnap
+fi
+
+screen -D -R simple-scan-workflow
+
+true;
