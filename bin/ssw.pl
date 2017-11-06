@@ -16,6 +16,25 @@ use constant PDF_RE => qr/\.pdf$/i;
 use constant PDFTOTEXT_PATH => '/usr/local/bin/pdftotext';
 
 sub main {
+	my $command = shift @ARGV;
+	die "need command" unless $command;
+	if( $command eq 'workflow' ) {
+		command_workflow();
+	} elsif( $command eq 'ocr' ) {
+		my ($from_file, $to_dir) = @ARGV;
+		apply_ocr(path($from_file), path($to_dir));
+	} elsif( $command eq 'rename' ) {
+		my ($from_file, $to_dir) = @ARGV;
+		apply_rename(path($from_file), path($to_dir));
+	} elsif( $command eq 'backup' ) {
+		my ($from_file, $to_dir) = @ARGV;
+		apply_backup(path($from_file), path($to_dir));
+	} else {
+		die "unknown command $command";
+	}
+}
+
+sub command_workflow {
 	my $dir_arg = shift @ARGV or die "require path as argument";
 	my $dir = path($dir_arg)->absolute;
 
@@ -34,16 +53,9 @@ sub main {
 
 sub run_ocr {
 	my ($from_dir, $to_dir) = @_;
-	my $tempdir = Path::Tiny->tempdir;
-	my $tempfile = $tempdir->child('temp.pdf');
 	for my $file ( $from_dir->children( PDF_RE ) ) {
 		say "Run OCR on file: $file";
-		apply_ocr( $file , $tempfile );
-		my $new_file = $to_dir->child( $file->basename );
-		$tempfile->move($new_file);
-
-		$file->remove;
-
+		my $new_file = apply_ocr( $file, $to_dir );
 		say "\t$file -> $new_file";
 	}
 }
@@ -67,6 +79,20 @@ sub run_backup {
 }
 
 sub apply_ocr {
+	my ($file, $to_dir) = @_;
+	my $tempdir = Path::Tiny->tempdir;
+	my $tempfile = $tempdir->child('temp.pdf');
+
+	apply_ocr_file( $file , $tempfile );
+	my $new_file = $to_dir->child( $file->basename );
+	$tempfile->move($new_file);
+
+	$file->remove;
+
+	return $new_file;
+}
+
+sub apply_ocr_file {
 	my ($input, $output) = @_;
 	# $input: Path::Tiny input file (must exist)
 	# $output: Path::Tiny output file
