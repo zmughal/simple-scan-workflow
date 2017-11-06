@@ -120,5 +120,6 @@ on IsMainApplicationBusy()
 end IsMainApplicationBusy
 
 on HideFineReader()
-   tell application "System Events" to tell process "FineReader OCR Pro" to set visible to false
+   -- tell application "System Events" to tell process "FineReader OCR Pro" to set visible to false
+   do shell script "( for i in `seq 1 20`; do osascript -e 'tell application \"System Events\" to tell process \"FineReader OCR Pro\" to set visible to false'; sleep 1; done ) &"
 end HideFineReader
