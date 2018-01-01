@@ -124,7 +124,7 @@ sub get_title {
 	my ($input_file) = @_;
 
 	my ($stdout, $exit) = capture_stdout {
-		system( PDFTOTEXT_PATH, qw(-f 1 -l 1 -enc UTF-8), "$input_file", qw(-) );
+		system( PDFTOTEXT_PATH, qw(-f 1 -l 5 -enc UTF-8), "$input_file", qw(-) );
 	};
 
 	my $text = decode_utf8($stdout);
