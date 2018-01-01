@@ -1,0 +1,39 @@
+-- Rename PDF Using Contents
+-- Created by Zakariyya Mughal.
+
+global ssw_path
+set ssw_path to "«$ssw_path»"
+
+
+tell application id "DNtp"
+	set ssw_env_path to ssw_path & "/ssw-env"
+	try
+		if not (exists think window 1) then error "No window is open."
+		--		if not (exists content record) then error "Please open a document."
+		--		set theText to selected text of think window 1 as string
+		--		if theText is missing value or theText is "" then error "No text is selected."
+		--		
+		
+		set these_items to the selection
+		if these_items is {} then error "Please select some contents."
+		repeat with this_item in these_items
+			set this_filename to the path of this_item
+			set this_path to the POSIX path of this_filename
+			try
+				if (count of these_items) is greater than 1 then set the selection of think window 1 to {this_item}
+			end try
+			
+			set new_name_script to ssw_env_path & " " & "output-title" & " " & quoted form of this_path
+			set new_name to do shell script new_name_script
+			
+			if this_path is not "" then
+				-- display alert (new_name as string)
+				set name of this_item to new_name
+			end if
+			-- delay 1
+		end repeat
+		
+	on error error_message number error_number
+		if the error_number is not -128 then display alert "DEVONthink Pro" message error_message as warning
+	end try
+end tell
