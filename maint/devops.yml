@@ -2,3 +2,4 @@ native:
   macos-homebrew:
     packages:
       - fswatch
+      - poppler
