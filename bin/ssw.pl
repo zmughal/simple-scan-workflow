@@ -29,6 +29,18 @@ sub main {
 	} elsif( $command eq 'backup' ) {
 		my ($from_file, $to_dir) = @ARGV;
 		apply_backup(path($from_file), path($to_dir));
+	} elsif( $command eq 'output-title' ) {
+		my ($from_file) = @ARGV;
+		my $path = path($from_file);
+		my $title = $path->basename;
+		my $title_no_ext = $path->basename( PDF_EXTENSION_W_DOT );
+		if( $from_file =~ PDF_RE ) {
+			my $new_title = get_title(path($from_file));
+			if( $new_title ne $title_no_ext ) {
+				$title = $new_title;
+			}
+		}
+		say $title;
 	} else {
 		die "unknown command $command";
 	}
@@ -108,16 +120,18 @@ sub apply_ocr_file {
 	die "OCR failed" unless $exit == 0;
 }
 
-sub apply_rename {
-	my ($input_file, $output_dir) = @_;
-	# $input_file: Path::Tiny input file
-	# $output_dir: Path::Tiny output directory
+sub get_title {
+	my ($input_file) = @_;
 
 	my ($stdout, $exit) = capture_stdout {
 		system( PDFTOTEXT_PATH, qw(-f 1 -l 1 -enc UTF-8), "$input_file", qw(-) );
 	};
 
 	my $text = decode_utf8($stdout);
+
+	# get rid of form feeds (used for pdftotext page breaks)
+	$text =~ s/\f/\n/gm;
+
 	$text =~ s/^\s*$//gm;
 	$text =~ s/[^\w\s]//gm;
 	$text =~ s/^\n//gm;
@@ -125,25 +139,36 @@ sub apply_rename {
 	my ($line1, $line2) = split(/\n/, $text);
 	my ($first_n_chars) = $text =~ /((?:\s*\S){20})/m;
 
-	my $line_title = "$line1 $line2";
-	my $char_title = $first_n_chars;
+	my $line_title = $line1 && $line2 ? "$line1 $line2" : "";
+	my $char_title = $first_n_chars ? $first_n_chars : "";
 
 	my $title = min_by { length $_ }
 		grep { $_ !~ /^\s*$/ }
 		map { s/\n|(^\s+)|(\s+$)//gr }
 		($line_title, $char_title);
 
+	$title ||= "";
+
 	my $new_filename = $input_file->basename( PDF_EXTENSION_W_DOT );
 
 	if( $title =~ /\w/ ) {
 		$new_filename = $title;
 	}
-	say $new_filename;
+
+	return $new_filename;
+}
+
+sub get_rename {
+	my ($input_file, $output_dir) = @_;
+	# $input_file: Path::Tiny input file
+	# $output_dir: Path::Tiny output directory
+
+	my $new_filename = get_title($input_file);
+	#say $new_filename;
 
 	my $suffix_num = 1;
 	my $probe_file = $output_dir->child( $new_filename . PDF_EXTENSION_W_DOT );
 	if( ! -f  $probe_file ) {
-		$input_file->move( $probe_file );
 		return $probe_file;
 	}
 
@@ -151,6 +176,16 @@ sub apply_rename {
 		$probe_file = $output_dir->child( $new_filename . "-$suffix_num" . PDF_EXTENSION_W_DOT );
 		$suffix_num++;
 	} while( -f  $probe_file );
+
+	return $probe_file;
+}
+
+sub apply_rename {
+	my ($input_file, $output_dir) = @_;
+	# $input_file: Path::Tiny input file
+	# $output_dir: Path::Tiny output directory
+
+	my $probe_file = get_rename( $input_file, $output_dir );
 
 	$input_file->move( $probe_file );
 
