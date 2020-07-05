@@ -6,6 +6,7 @@ use Modern::Perl;
 use Path::Tiny;
 use Capture::Tiny qw(capture_stdout);
 use List::UtilsBy qw(min_by);
+use FindBin;
 
 use constant PDF_EXTENSION_W_DOT => '.pdf';
 use constant PDF_RE => qr/\.pdf$/i;
