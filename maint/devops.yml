@@ -3,3 +3,10 @@ native:
     packages:
       - fswatch
       - poppler
+      - haskell-stack
+  debian:
+    packages:
+      - fswatch
+      - poppler-utils
+      - pdfsandwich
+      - haskell-stack
