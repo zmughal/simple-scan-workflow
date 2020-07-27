@@ -1,6 +1,12 @@
-requires 'Modern::Perl';
-requires 'Path::Tiny';
-requires 'IPC::System::Simple';
+requires 'CLI::Osprey';
 requires 'Capture::Tiny';
+requires 'DateTime::Format::Natural';
+requires 'Encode';
+requires 'File::Find::Rule';
+requires 'IPC::System::Simple';
 requires 'List::UtilsBy';
-requires 'Text::Template'
+requires 'Modern::Perl';
+requires 'Moo';
+requires 'Path::Tiny';
+requires 'Text::Template';
+requires 'autodie';

@@ -1,34 +1,39 @@
 package SSW::Helpers;
 # ABSTRACT: Set of helper commands
 
+use FindBin;
 use Encode qw(decode_utf8);
 use Modern::Perl;
+use File::Which;
+
+use SSW::Action::OCR;
+
+use IPC::System::Simple ();
+use autodie qw(:all);
+
 use Path::Tiny;
 use Capture::Tiny qw(capture_stdout);
 use List::UtilsBy qw(min_by);
-use FindBin;
+
+use LWP::UserAgent;
+use JSON::MaybeXS;
+
 
 use constant PDF_EXTENSION_W_DOT => '.pdf';
 use constant PDF_RE => qr/\.pdf$/i;
-use constant PDFTOTEXT_PATH => '/usr/local/bin/pdftotext';
+use constant PDFTOTEXT_PATH => grep { -x } ('/usr/local/bin/pdftotext', which('pdftotext'));
 
 use Exporter 'import';
-our @EXPORT = qw(apply_ocr_file get_title PDF_EXTENSION_W_DOT PDF_RE);
+our @EXPORT = qw(apply_ocr_file get_title extract_date PDF_EXTENSION_W_DOT PDF_RE);
 
 sub apply_ocr_file {
 	my ($input, $output) = @_;
 	# $input: Path::Tiny input file (must exist)
 	# $output: Path::Tiny output file
-
-	my $path_to_finereader_script = path($FindBin::Bin)->parent->child(qw(applescript abby-finereader-ocr-pdf.scpt));
-	my $exit = system(
-			qw(osascript),
-			$path_to_finereader_script,
-			$input->absolute,
-			$output->absolute,
-	);
-
-	die "OCR failed" unless $exit == 0;
+	SSW::Action::OCR->new_with_options(
+		input => $input,
+		output => $output,
+	)->run;
 }
 
 sub get_title {
@@ -69,6 +74,45 @@ sub get_title {
 	return $new_filename;
 }
 
+sub extract_date {
+	my ($input_file) = @_;
 
+	my ($stdout, $exit) = capture_stdout {
+		system( PDFTOTEXT_PATH, qw(-f 1 -l 5 -enc UTF-8), "$input_file", qw(-) );
+	};
+
+	my $text = decode_utf8($stdout);
+
+	my $ua = LWP::UserAgent->new;
+	my $response = $ua->post( 'http://0.0.0.0:8000/parse',
+		Content => {
+			locale => 'en_US',
+			#dims => encode_json(['time']),
+			text => $stdout
+		}
+	);
+	my $js = decode_json( $response->content );
+
+	my @times = grep { $_->{dim} eq 'time' } @$js;
+	say "Times: @{[ scalar @times ]}/@{[ scalar @$js ]}";
+
+	use warnings FATAL => 'uninitialized';
+	for my $time (@times) {
+		my $body = $time->{body};
+		my $value;
+
+		my $type = $time->{value}{type};
+		if( $type eq 'interval' ) {
+			my $interval = exists $time->{value}{from} ? $time->{value}{from} : $time->{value}{to};
+			$value = $interval->{value};
+		} elsif( $type eq 'value' ) {
+			$value = $time->{value}{value};
+		} else {
+			warn "Unknown type $type";
+		}
+		say "$body | $value";
+	}
+	#use DDP; p $js;
+}
 
 1;
