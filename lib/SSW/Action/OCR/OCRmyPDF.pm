@@ -12,7 +12,13 @@ sub run {
 	my ($input, $output) = ( path($self->input), path($self->output) );
 	-f $input or die "input file must exist";
 
-	...
+	my $exit = system(
+			qw(ocrmypdf),
+			$input->absolute,
+			$output->absolute,
+	);
+
+	die "OCR failed" unless $exit == 0;
 }
 
 with qw(SSW::Role::OCRable);
