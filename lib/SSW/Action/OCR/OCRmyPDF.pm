@@ -9,7 +9,7 @@ use autodie qw(:all);
 
 sub run {
 	my ($self) = @_;
-	my ($input, $output) = path($self->input), path($self->output);
+	my ($input, $output) = ( path($self->input), path($self->output) );
 	-f $input or die "input file must exist";
 
 	...

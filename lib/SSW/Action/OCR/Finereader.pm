@@ -8,7 +8,7 @@ use FindBin::libs qw( export scalar base=applescript );
 
 sub run {
 	my ($self) = @_;
-	my ($input, $output) = path($self->input), path($self->output);
+	my ($input, $output) = ( path($self->input), path($self->output) );
 	-f $input or die "input file must exist";
 
 	my $path_to_finereader_script = path($applescript)->child(qw(abby-finereader-ocr-pdf.scpt));
