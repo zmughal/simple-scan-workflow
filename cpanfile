@@ -10,3 +10,4 @@ requires 'Moo';
 requires 'Path::Tiny';
 requires 'Text::Template';
 requires 'autodie';
+requires 'Dir::Self';
