@@ -4,9 +4,11 @@ native:
       - fswatch
       - poppler
       - haskell-stack
+      - rsync
   debian:
     packages:
       - fswatch
       - poppler-utils
       - pdfsandwich
       - haskell-stack
+      - rsync
