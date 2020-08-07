@@ -277,7 +277,7 @@ sub _create_bundle {
 
 	my $bundle_meta = $bundle_tmp_dir->child('.meta.json');
 	$bundle_meta->spew_utf8( $self->_json->encode( +{
-		_metadata_version => 1,
+		'-simple-scan-workflow' => { metadata_version => 1, },
 		data => $data,
 	}));
 

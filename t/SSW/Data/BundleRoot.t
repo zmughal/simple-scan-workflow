@@ -158,7 +158,7 @@ subtest "Create data bundle" => sub {
 
 			subtest "Check data via metadata" => sub {
 				my $meta = $br->_json->decode( $bundle->_bundle_meta->slurp_utf8 );
-				is $meta->{_metadata_version}, 1, 'version 1 of metadata';
+				is_deeply $meta->{'-simple-scan-workflow'}, { metadata_version => 1, }, 'version 1 of metadata';
 				is_deeply $meta->{data}, $bundle->data, 'data';
 			};
 		};
