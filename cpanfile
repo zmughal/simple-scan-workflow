@@ -1,13 +1,35 @@
 requires 'CLI::Osprey';
 requires 'Capture::Tiny';
-requires 'DateTime::Format::Natural';
+requires 'DBD::SQLite';
+requires 'DBI';
+requires 'Daemon::Control';
+requires 'Digest::SHA';
+requires 'Dir::Self';
 requires 'Encode';
+requires 'File::Copy::Recursive';
 requires 'File::Find::Rule';
+requires 'File::Which';
+requires 'FindBin::libs';
+requires 'IO::Compress::Zip';
+requires 'IPC::Run';
 requires 'IPC::System::Simple';
+requires 'JSON::MaybeXS';
+requires 'LWP::UserAgent';
 requires 'List::UtilsBy';
 requires 'Modern::Perl';
 requires 'Moo';
+requires 'Moo::Role';
+requires 'MooX::HandlesVia';
+requires 'MooX::ShortHas';
+requires 'Mu';
 requires 'Path::Tiny';
+requires 'Readonly';
+requires 'Regexp::Assemble';
 requires 'Text::Template';
+requires 'Types::Path::Tiny';
 requires 'autodie';
-requires 'Dir::Self';
+
+on test => sub {
+    requires 'Archive::Zip';
+    requires 'Test::Most';
+};
