@@ -7,11 +7,11 @@ use Modern::Perl;
 use SSW::Action::OCR;
 
 use SSW::Process::pdftotext;
+use SSW::Process::ExtractPDFTitle::FromBeginning;
 
 use autodie qw(:all);
 
 use Path::Tiny;
-use List::UtilsBy qw(min_by);
 
 use LWP::UserAgent;
 use JSON::MaybeXS;
@@ -44,25 +44,13 @@ sub get_title {
 
 	my $text = $pdftotext->output_text;
 
-	# get rid of form feeds (used for pdftotext page breaks)
-	$text =~ s/\f/\n/gm;
+	my $extract = SSW::Process::ExtractPDFTitle::FromBeginning->new(
+		input_text => $text,
+	);
 
-	$text =~ s/^\s*$//gm;
-	$text =~ s/[^\w\s]//gm;
-	$text =~ s/^\n//gm;
+	$extract->process;
 
-	my ($line1, $line2) = split(/\n/, $text);
-	my ($first_n_chars) = $text =~ /((?:\s*\S){20})/m;
-
-	my $line_title = $line1 && $line2 ? "$line1 $line2" : "";
-	my $char_title = $first_n_chars ? $first_n_chars : "";
-
-	my $title = min_by { length $_ }
-		grep { $_ !~ /^\s*$/ }
-		map { s/\n|(^\s+)|(\s+$)//gr }
-		($line_title, $char_title);
-
-	$title ||= "";
+	my $title = $extract->output_text;
 
 	my $new_filename = $input_file->basename( PDF_EXTENSION_W_DOT );
 
