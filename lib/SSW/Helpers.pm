@@ -2,17 +2,15 @@ package SSW::Helpers;
 # ABSTRACT: Set of helper commands
 
 use FindBin;
-use Encode qw(decode_utf8);
 use Modern::Perl;
-use File::Which;
 
 use SSW::Action::OCR;
 
-use IPC::System::Simple ();
+use SSW::Process::pdftotext;
+
 use autodie qw(:all);
 
 use Path::Tiny;
-use Capture::Tiny qw(capture_stdout);
 use List::UtilsBy qw(min_by);
 
 use LWP::UserAgent;
@@ -21,7 +19,6 @@ use JSON::MaybeXS;
 
 use constant PDF_EXTENSION_W_DOT => '.pdf';
 use constant PDF_RE => qr/\.pdf$/i;
-use constant PDFTOTEXT_PATH => grep { -x } ('/usr/local/bin/pdftotext', which('pdftotext'));
 
 use Exporter 'import';
 our @EXPORT = qw(apply_ocr_file get_title extract_date PDF_EXTENSION_W_DOT PDF_RE);
@@ -39,11 +36,13 @@ sub apply_ocr_file {
 sub get_title {
 	my ($input_file) = @_;
 
-	my ($stdout, $exit) = capture_stdout {
-		system( PDFTOTEXT_PATH, qw(-f 1 -l 5 -enc UTF-8), "$input_file", qw(-) );
-	};
+	my $pdftotext = SSW::Process::pdftotext->new(
+		input_file => $input_file,
+	);
 
-	my $text = decode_utf8($stdout);
+	$pdftotext->process;
+
+	my $text = $pdftotext->output_text;
 
 	# get rid of form feeds (used for pdftotext page breaks)
 	$text =~ s/\f/\n/gm;
@@ -77,11 +76,13 @@ sub get_title {
 sub extract_date {
 	my ($input_file) = @_;
 
-	my ($stdout, $exit) = capture_stdout {
-		system( PDFTOTEXT_PATH, qw(-f 1 -l 5 -enc UTF-8), "$input_file", qw(-) );
-	};
+	my $pdftotext = SSW::Process::pdftotext->new(
+		input_file => $input_file,
+	);
 
-	my $text = decode_utf8($stdout);
+	$pdftotext->process;
+
+	my $text = $pdftotext->output_text;
 
 	my $ua = LWP::UserAgent->new;
 	my $response = $ua->post( 'http://0.0.0.0:8000/parse',
