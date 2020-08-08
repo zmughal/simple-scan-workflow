@@ -13,6 +13,8 @@ use constant PDFTOTEXT_PATH => grep { -x } ('/usr/local/bin/pdftotext', which('p
 
 ro 'input_file';
 
+# TODO perhaps convert this to predicate and only pass page numbers if
+# explicitly set?
 has [ qw(first_page_number last_page_number) ] => (
 	is => 'ro',
 	builder => 1,
