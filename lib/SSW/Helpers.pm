@@ -88,7 +88,7 @@ sub extract_date {
 		Content => {
 			locale => 'en_US',
 			#dims => encode_json(['time']),
-			text => $stdout
+			text => $text,
 		}
 	);
 	my $js = decode_json( $response->content );
