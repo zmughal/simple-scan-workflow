@@ -8,14 +8,11 @@ use SSW::Action::OCR;
 
 use SSW::Process::pdftotext;
 use SSW::Process::ExtractPDFTitle::FromBeginning;
+use SSW::Process::ExtractTime::Duckling;
 
 use autodie qw(:all);
 
 use Path::Tiny;
-
-use LWP::UserAgent;
-use JSON::MaybeXS;
-
 
 use constant PDF_EXTENSION_W_DOT => '.pdf';
 use constant PDF_RE => qr/\.pdf$/i;
@@ -72,36 +69,11 @@ sub extract_date {
 
 	my $text = $pdftotext->output_text;
 
-	my $ua = LWP::UserAgent->new;
-	my $response = $ua->post( 'http://0.0.0.0:8000/parse',
-		Content => {
-			locale => 'en_US',
-			#dims => encode_json(['time']),
-			text => $text,
-		}
+	my $duckling = SSW::Process::ExtractTime::Duckling->new(
+		input_text => $text,
 	);
-	my $js = decode_json( $response->content );
 
-	my @times = grep { $_->{dim} eq 'time' } @$js;
-	say "Times: @{[ scalar @times ]}/@{[ scalar @$js ]}";
-
-	use warnings FATAL => 'uninitialized';
-	for my $time (@times) {
-		my $body = $time->{body};
-		my $value;
-
-		my $type = $time->{value}{type};
-		if( $type eq 'interval' ) {
-			my $interval = exists $time->{value}{from} ? $time->{value}{from} : $time->{value}{to};
-			$value = $interval->{value};
-		} elsif( $type eq 'value' ) {
-			$value = $time->{value}{value};
-		} else {
-			warn "Unknown type $type";
-		}
-		say "$body | $value";
-	}
-	#use DDP; p $js;
+	$duckling->process;
 }
 
 1;

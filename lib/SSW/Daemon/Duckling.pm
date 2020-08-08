@@ -1,5 +1,5 @@
 package SSW::Daemon::Duckling;
-# ABSTRACT: «TODO»
+# ABSTRACT: Daemon to start Duckling parser service
 
 use Modern::Perl;
 use Mu;
@@ -9,6 +9,8 @@ use Daemon::Control;
 use Path::Tiny;
 use File::Find::Rule;
 use FindBin::libs qw( export scalar base=vendor );
+
+use constant PORT => 8000;
 
 lazy _daemon => sub {
 	Daemon::Control->new(
