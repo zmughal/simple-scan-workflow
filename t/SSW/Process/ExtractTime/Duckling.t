@@ -38,31 +38,39 @@ sub end {
 my $environment = Test::SetupTeardown->new( begin => \&begin, end => \&end );
 
 $environment->run_test("Process extract time via Duckling" => sub {
-	TODO: {
-		local $TODO = 'write test';
+	my $text = <<~'EOF';
+	There are some dates in here such as January 2nd, 2008. But we
+	can also talk about 1/23/2008. Or 3rd of Feb.
+	Or maybe the 29th of February.
+	EOF
+	my @text_dates = (
+		'January 2nd, 2008',
+		'1/23/2008',
+		'3rd of Feb',
+		'29th of February',
+	);
 
-		my $text = <<~'EOF';
-		There are some dates in here such as January 2nd, 2008. But we
-		can also talk about 1/23/2008. Or 3rd of Feb.
-		Or maybe the 29th of February.
-		EOF
+	my $duckling = SSW::Process::ExtractTime::Duckling->new(
+		input_text => $text,
+		input_args => {
+			reftime => DateTime->new(
+				year => 2020, month => 8, day => 2
+			)->epoch * 1000,
+		}
+	);
 
-		my $duckling = SSW::Process::ExtractTime::Duckling->new(
-			input_text => $text,
-			input_args => {
-				reftime => DateTime->new(
-					year => 2020, month => 8, day => 2
-				)->epoch * 1000,
-			}
-		);
+	$duckling->process;
 
-		$duckling->process;
+	#if( 0 ) {
+	#use Data::Dumper;
+	#diag Dumper($duckling->output_data);
+	#}
+	my @body_text = map { $_->{body}  } @{ $duckling->output_data };
+	#use XXX; XXX @body_text;
 
-		use Data::Dumper;
-		diag Dumper($duckling->output_data);
-
-		fail;
-	}
+	cmp_deeply \@body_text, [
+		map { re(qr/\Q$_\E/) } @text_dates
+	], 'extracted text';
 });
 
 done_testing;
