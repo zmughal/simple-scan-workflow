@@ -36,4 +36,17 @@ sub process {
 	$self->output_data( $response_data );
 }
 
+use constant S_TO_MS => 1000;
+use constant MS_TO_S => 1 / S_TO_MS;
+
+sub datetime_to_reftime {
+	my ($class, $datetime) = @_;
+	$datetime->epoch * S_TO_MS;
+}
+
+sub reftime_to_datetime {
+	my ($class, $reftime) = @_;
+	DateTime->from_epoch( epoch => $reftime * MS_TO_S );
+}
+
 1;
