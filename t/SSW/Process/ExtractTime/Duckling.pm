@@ -34,10 +34,8 @@ sub duckling_data_and_process :Test(setup)  {
 			'2024-02-29',
 		];
 
-	$self->{data}{reftime} = SSW::Process::ExtractTime::Duckling->datetime_to_reftime(
-		DateTime->new(
-			year => 2020, month => 8, day => 2
-		)
+	$self->{data}{reftime} = DateTime->new(
+		year => 2020, month => 8, day => 2
 	);
 
 	$self->{data}{tz} = 'America/New_York';

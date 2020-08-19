@@ -22,13 +22,21 @@ sub process {
 
 	my $ua = LWP::UserAgent->new;
 
+	my %input_args = %{ $self->input_args };
+	if( exists $input_args{reftime}
+		&& ref $input_args{reftime}
+		&& $input_args{reftime}->isa('DateTime')
+		) {
+		$input_args{reftime} = $self->datetime_to_reftime($input_args{reftime});
+	}
+
 	#my @post_args = ( "text", "lang", "dims", "tz", "locale", "reftime", "latent", );
 	my $response = $ua->post( "http://0.0.0.0:@{[ SSW::Daemon::Duckling->PORT ]}/parse",
 		Content => {
 			locale => 'en_US',
 			#dims => encode_json(['time']),
 			text => $text,
-			%{ $self->input_args },
+			%input_args,
 		}
 	);
 	my $response_data = decode_json( $response->content );
