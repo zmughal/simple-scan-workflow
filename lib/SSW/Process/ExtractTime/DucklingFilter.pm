@@ -56,34 +56,52 @@ sub _check_specificity {
 	my $m_times = $self->_get_data_with_reftime($reftime_dt - $months_duration );
 	my $d_times = $self->_get_data_with_reftime($reftime_dt - $days_duration   );
 
+	sub _get_value_container {
+		my ($input_value) = @_;
+		my $container;
+		if( $input_value->{type} eq 'interval' ) {
+			$container = exists $input_value->{from}
+				? $input_value->{from}
+				: $input_value->{to}
+		} elsif( $input_value->{type} eq 'value' ) {
+			$container = $input_value;
+		} else {
+			die "Unknown type @{[ $input_value->{type} ]}";
+		}
+
+		$container;
+	}
+
 	sub _parse_to_dt {
 		my ($time_data) = @_;
 		[ map {
 			DateTime::Format::ISO8601->parse_datetime(
-				$_->{value}
+				_get_value_container($_)->{value},
 			)
 		} @{ $time_data->{value}{values} } ];
 	}
 
+	#use DDP; p $r_times;
 	for my $idx (0..@$r_times-1) {
 		my $current = $r_times->[$idx];
 		my $dts = _parse_to_dt($current);
 
 		if( @$dts == 1 ) {
-			if( $current->{value}{grain} eq 'year' ) {
+			my $first_value = _get_value_container($current->{value}{values}[0]);
+			if( $first_value->{grain} eq 'year' ) {
 				$current->{out} = [
 					$dts->[0]->year,
 					UNKNOWN_MONTH,
 					UNKNOWN_DAY,
 				];
-			} elsif( $current->{value}{grain} eq 'month' ) {
+			} elsif( $first_value->{grain} eq 'month' ) {
 				$current->{out} = [
 					$dts->[0]->year,
 					sprintf("%02d", $dts->[0]->month),
 					UNKNOWN_DAY,
 				];
 			} else {
-				# ( $current->{value}{grain} eq 'day' )
+				# ( $first_value->{grain} eq 'day' )
 				$current->{out} = [
 					$dts->[0]->year,
 					sprintf("%02d", $dts->[0]->month),

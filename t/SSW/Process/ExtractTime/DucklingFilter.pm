@@ -1,7 +1,7 @@
 package t::SSW::Process::ExtractTime::DucklingFilter;
 # ABSTRACT: Test class for filtering output of Duckling
 
-use Test::Most tests => 7;
+use Test::Most tests => 8;
 use lib 't/lib';
 use parent qw(TestDuckling);
 
@@ -138,6 +138,87 @@ sub check_missing_any_dt_at_all :Test(1) {
 	$filter->process;
 
 	is $filter->output_data, $self->{data}{expect};
+}
+
+sub check_interval :Test(1) {
+	my ($self) = @_;
+
+	subtest "Intervals" => sub {
+		is do {
+			my $filter = SSW::Process::ExtractTime::DucklingFilter->new(
+				input_text => <<~'EOF'
+					The office is closed from 09/20/1995 to 09/22/1995.
+					EOF
+			);
+			$filter->process;
+			$filter->output_data;
+		}, '1995-09-20', 'specific bounded interval';
+
+		is do {
+			my $filter = SSW::Process::ExtractTime::DucklingFilter->new(
+				input_text => <<~'EOF'
+					The office is closed from 09/20 to 09/22.
+					EOF
+			);
+			$filter->process;
+			$filter->output_data;
+		}, 'YYYY-09-20', 'bounded interval missing year';
+
+		is do {
+			note <<~EOF;
+			Generates an unspecific "interval" type (missing year)
+			and a specific "value" type.  The year does not
+			propagate to start of interval.
+			EOF
+			my $filter = SSW::Process::ExtractTime::DucklingFilter->new(
+				input_text => <<~'EOF'
+					The office is closed from 09/20 to 09/22/1995.
+					EOF
+			);
+			$filter->process;
+			$filter->output_data;
+		}, '1995-09-22', 'bounded interval but also specific end date';
+
+		is do {
+			my $filter = SSW::Process::ExtractTime::DucklingFilter->new(
+				input_text => <<~'EOF'
+					The office is closed from 09/20/1995.
+					EOF
+			);
+			$filter->process;
+			$filter->output_data;
+		}, '1995-09-20', 'specific unbounded interval (from)';
+
+		is do {
+			my $filter = SSW::Process::ExtractTime::DucklingFilter->new(
+				input_text => <<~'EOF'
+					The office is closed until 09/22/1995.
+					EOF
+			);
+			$filter->process;
+			$filter->output_data;
+		}, '1995-09-22', 'specific unbounded interval (until)';
+
+		is do {
+			my $filter = SSW::Process::ExtractTime::DucklingFilter->new(
+				input_text => <<~'EOF'
+					The office is closed from 09/20.
+					EOF
+			);
+			$filter->process;
+			$filter->output_data;
+		}, 'YYYY-09-20', 'unbounded interval missing year (from)';
+
+		is do {
+			my $filter = SSW::Process::ExtractTime::DucklingFilter->new(
+				input_text => <<~'EOF'
+					The office is closed until 09/22.
+					EOF
+			);
+			$filter->process;
+			$filter->output_data;
+		}, 'YYYY-09-22', 'unbounded interval missing year (until)';
+	};
 }
 
 1;
