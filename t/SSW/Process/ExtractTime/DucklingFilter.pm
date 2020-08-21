@@ -1,7 +1,7 @@
 package t::SSW::Process::ExtractTime::DucklingFilter;
 # ABSTRACT: Test class for filtering output of Duckling
 
-use Test::Most;
+use Test::Most tests => 7;
 use lib 't/lib';
 use parent qw(TestDuckling);
 

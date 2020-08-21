@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 
-use Test::Most tests => 7;
-
+use Test::Most;
 use lib '.';
 use t::SSW::Process::ExtractTime::DucklingFilter;
 
