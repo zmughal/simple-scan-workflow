@@ -16,7 +16,9 @@ use Readonly;
 use Regexp::Assemble;
 use if $^O ne 'MSWin32', "File::Rsync";
 
-Readonly::Array  my  @FILE_EXTENSIONS => ( ".tiff", ".tif", ".pdf", ".jpg" );
+Readonly::Array  my  @FILE_EXTENSIONS_NOT_PDF => ( ".tiff", ".tif", ".jpg" );
+Readonly::Array  my  @FILE_EXTENSIONS_PDF => ( ".pdf" );
+Readonly::Array  my  @FILE_EXTENSIONS => ( @FILE_EXTENSIONS_PDF, @FILE_EXTENSIONS_NOT_PDF );
 Readonly::Scalar my  $FILE_EXTENSIONS_RE => Regexp::Assemble
 	->new(anchor_line_end => 1 )
 	->add( map { quotemeta } @FILE_EXTENSIONS );
