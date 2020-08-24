@@ -5,6 +5,8 @@ native:
       - poppler
       - haskell-stack
       - rsync
+      - ocrmypdf # for img2pdf
+      - imagemagick # for convert
   debian:
     packages:
       - fswatch
@@ -12,3 +14,5 @@ native:
       - pdfsandwich
       - haskell-stack
       - rsync
+      - img2pdf
+      - imagemagick # for convert

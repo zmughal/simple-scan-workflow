@@ -1,3 +1,4 @@
+requires 'Archive::Zip';
 requires 'CLI::Osprey';
 requires 'Capture::Tiny';
 requires 'DBD::SQLite';
@@ -11,6 +12,7 @@ requires 'Encode';
 requires 'File::Copy::Recursive';
 requires 'File::Find::Rule';
 requires 'File::Which';
+requires 'File::chdir';
 requires 'FindBin::libs';
 requires 'IO::Compress::Zip';
 requires 'IPC::Run';
@@ -34,7 +36,6 @@ requires 'Types::Path::Tiny';
 requires 'autodie';
 
 on test => sub {
-    requires 'Archive::Zip';
     requires 'Net::EmptyPort';
     requires 'Test::Class';
     requires 'Test::Most';
