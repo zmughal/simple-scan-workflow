@@ -35,6 +35,10 @@ requires 'Text::Template';
 requires 'Types::Path::Tiny';
 requires 'autodie';
 
+if( $^O ne 'MSWin32' ) {
+    requires 'File::Rsync';
+}
+
 on test => sub {
     requires 'Net::EmptyPort';
     requires 'Test::Class';
