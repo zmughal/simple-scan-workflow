@@ -25,7 +25,7 @@ using terms from application "FineReader OCR Pro"
    set pageSizePageSizeEnum to automatic
    set increasePaperSizeToFitContentBoolean to yes
    set keepImageBoolean to yes
-   set imageOptionsImageQualityEnum to balanced quality
+   set imageOptionsImageQualityEnum to high quality
    set keepTextAndBackgroundColorsBoolean to yes
    set highlightUncertainSymbolsBoolean to yes
    set keepPageNumbersBoolean to yes
