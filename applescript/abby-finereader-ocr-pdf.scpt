@@ -29,6 +29,7 @@ using terms from application "FineReader OCR Pro"
    set keepTextAndBackgroundColorsBoolean to yes
    set highlightUncertainSymbolsBoolean to yes
    set keepPageNumbersBoolean to yes
+   set useMRCBoolean to yes
 end using terms from
 
 WaitWhileBusy()
@@ -65,6 +66,7 @@ tell application "FineReader OCR Pro"
        saving type saveType ¬
        keep pictures keepImageBoolean ¬
        image quality imageOptionsImageQualityEnum ¬
+       use mrc useMRCBoolean ¬
        keep text and background colors keepTextAndBackgroundColorsBoolean
 end tell
 
