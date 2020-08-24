@@ -70,6 +70,15 @@ end tell
 
 WaitWhileBusy()
 
+tell application "FineReader OCR Pro"
+   export to txt (toFile & ".txt") ¬
+       ocr languages enum langList ¬
+       saving type saveType
+end tell
+
+WaitWhileBusy()
+
+
 -- moving exported file if FineReader is sendboxed--
 
 HideFineReader()
