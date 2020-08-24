@@ -8,7 +8,6 @@ use File::Copy::Recursive;
 use DBI;
 use DBD::SQLite ();
 use Digest::SHA;
-use JSON::MaybeXS;
 
 use IO::Compress::Zip qw(zip $ZipError) ;
 
@@ -95,10 +94,6 @@ lazy _dbh => sub {
 	my $dbh = DBI->connect("dbi:SQLite:@{[ $self->bundle_root_db_path ]}","","",
 		{ RaiseError => 1, AutoCommit => 1 })
 		or die "Could not connect: $DBI::errstr";
-};
-
-lazy _json => sub {
-	my $json = JSON::MaybeXS->new( utf8 => 1, canonical => 1 );
 };
 
 # =method _create_table
@@ -309,5 +304,7 @@ sub _create_bundle {
 		data => $data,
 	);
 }
+
+with qw(SSW::Role::JSONSerializable);
 
 1;
