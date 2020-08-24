@@ -31,7 +31,7 @@ sub run {
 
 
 	my $filter = SSW::Process::ExtractTime::DucklingFilter->new(
-		input_text => $text,
+		input_text => $text =~ s/\n/ /gsr,
 	);
 	$filter->process;
 
