@@ -6,7 +6,8 @@ native:
       - haskell-stack
       - rsync
       - ocrmypdf # for img2pdf
-      - imagemagick # for convert
+      #- imagemagick # for convert
+      # brew install blogabe/homebrew-xplanet/imagemagick -s --with-pango
   debian:
     packages:
       - fswatch
