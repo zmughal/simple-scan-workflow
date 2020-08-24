@@ -4,6 +4,7 @@ package SSW::Process::ExtractTime::Duckling;
 use Modern::Perl;
 use Mu;
 
+use SSW::Daemon::Duckling;
 use LWP::UserAgent;
 use JSON::MaybeXS;
 
