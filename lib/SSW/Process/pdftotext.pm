@@ -3,13 +3,14 @@ package SSW::Process::pdftotext;
 
 use Mu;
 use Encode qw(decode_utf8);
+use List::AllUtils qw(first);
 use File::Which;
 use Capture::Tiny qw(capture_stdout);
 
 use IPC::System::Simple ();
 use autodie qw(:all);
 
-use constant PDFTOTEXT_PATH => grep { -x } ('/usr/local/bin/pdftotext', which('pdftotext'));
+use constant PDFTOTEXT_PATH => first { -x } ('/usr/local/bin/pdftotext', which('pdftotext'));
 
 ro 'input_file';
 

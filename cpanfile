@@ -19,6 +19,7 @@ requires 'IPC::Run';
 requires 'IPC::System::Simple';
 requires 'JSON::MaybeXS';
 requires 'LWP::UserAgent';
+requires 'List::AllUtils';
 requires 'List::Util', 'v1.55.0';
 requires 'List::UtilsBy';
 requires 'Modern::Perl';
