@@ -16,7 +16,7 @@ use Readonly;
 use Regexp::Assemble;
 use if $^O ne 'MSWin32', "File::Rsync";
 
-Readonly::Array  our  @FILE_EXTENSIONS_NOT_PDF => ( ".tiff", ".tif", ".jpg" );
+Readonly::Array  our  @FILE_EXTENSIONS_NOT_PDF => ( ".tiff", ".tif", ".jpg", ".jpeg" );
 Readonly::Array  our  @FILE_EXTENSIONS_PDF => ( ".pdf" );
 Readonly::Array  our  @FILE_EXTENSIONS => ( @FILE_EXTENSIONS_PDF, @FILE_EXTENSIONS_NOT_PDF );
 Readonly::Scalar our  $FILE_EXTENSIONS_RE => Regexp::Assemble
@@ -235,7 +235,7 @@ Given a file: e.g., C</path/to/process/bills-2020-06/IMG01.tiff>
   C<'bills-2020-06/IMG01.tiff'>
 * create bundle with name normalised (remove directory and extension)
   C<'bundle/bills-2020-06--IMG01'>
-  valid extensions depend on what can be processed: .tiff, .pdf, .jpg
+  valid extensions depend on what can be processed: .tiff, .tif, .pdf, .jpg, .jpeg
 =end :list
 
 =cut
