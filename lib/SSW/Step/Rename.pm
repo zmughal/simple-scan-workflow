@@ -3,6 +3,7 @@ package SSW::Step::Rename;
 
 use Moo;
 use autodie qw(:all);
+use Path::Tiny;
 
 use SSW::Process::pdftotext;
 use SSW::Process::ExtractPDFTitle::FromBeginning;
@@ -17,12 +18,18 @@ sub run {
 
 
 	my $pdf_file = $self->previous_step->output;
+	my $sidecar_file = $pdf_file . '.txt';
 
-	my $pdftotext = SSW::Process::pdftotext->new(
-		input_file => $pdf_file,
-	);
-	$pdftotext->process;
-	my $text = $pdftotext->output_text;
+	my $text;
+	if( -f $sidecar_file ) {
+		$text = path($sidecar_file)->slurp_utf8;
+	} else {
+		my $pdftotext = SSW::Process::pdftotext->new(
+			input_file => $pdf_file,
+		);
+		$pdftotext->process;
+		$text = $pdftotext->output_text;
+	}
 
 	my $extract = SSW::Process::ExtractPDFTitle::FromBeginning->new(
 		input_text => $text,
