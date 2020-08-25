@@ -16,6 +16,7 @@ sub run {
 			qw(ocrmypdf),
 			$input->absolute,
 			$output->absolute,
+			qw(--sidecar), $output->absolute . '.txt',
 	);
 
 	die "OCR failed" unless $exit == 0;
