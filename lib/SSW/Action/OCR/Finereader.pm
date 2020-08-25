@@ -20,8 +20,10 @@ sub run {
 	);
 
 	die "OCR failed" unless $exit == 0;
+	die "OCR PDF not generated" unless -f $output;
+	die "Sidecar not generated" unless -f $self->sidecar_file;
 }
 
-with qw(SSW::Role::OCRable);
+with qw(SSW::Role::OCRable SSW::Role::OCRable::Sidecar);
 
 1;
