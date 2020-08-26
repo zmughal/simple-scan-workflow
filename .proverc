@@ -1,0 +1,4 @@
+# Duckling tests can only run sequentially due to using same port for startup
+--rules='seq=t/**Duckling*.t'
+
+--rules='par=**'

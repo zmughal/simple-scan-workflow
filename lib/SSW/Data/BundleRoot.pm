@@ -8,7 +8,6 @@ use File::Copy::Recursive;
 use DBI;
 use DBD::SQLite ();
 use Digest::SHA;
-use JSON::MaybeXS;
 
 use IO::Compress::Zip qw(zip $ZipError) ;
 
@@ -16,8 +15,10 @@ use Readonly;
 use Regexp::Assemble;
 use if $^O ne 'MSWin32', "File::Rsync";
 
-Readonly::Array  my  @FILE_EXTENSIONS => ( ".tiff", ".tif", ".pdf", ".jpg" );
-Readonly::Scalar my  $FILE_EXTENSIONS_RE => Regexp::Assemble
+Readonly::Array  our  @FILE_EXTENSIONS_NOT_PDF => ( ".tiff", ".tif", ".jpg", ".jpeg" );
+Readonly::Array  our  @FILE_EXTENSIONS_PDF => ( ".pdf" );
+Readonly::Array  our  @FILE_EXTENSIONS => ( @FILE_EXTENSIONS_PDF, @FILE_EXTENSIONS_NOT_PDF );
+Readonly::Scalar our  $FILE_EXTENSIONS_RE => Regexp::Assemble
 	->new(anchor_line_end => 1 )
 	->add( map { quotemeta } @FILE_EXTENSIONS );
 
@@ -93,10 +94,6 @@ lazy _dbh => sub {
 	my $dbh = DBI->connect("dbi:SQLite:@{[ $self->bundle_root_db_path ]}","","",
 		{ RaiseError => 1, AutoCommit => 1 })
 		or die "Could not connect: $DBI::errstr";
-};
-
-lazy _json => sub {
-	my $json = JSON::MaybeXS->new( utf8 => 1, canonical => 1 );
 };
 
 # =method _create_table
@@ -233,7 +230,7 @@ Given a file: e.g., C</path/to/process/bills-2020-06/IMG01.tiff>
   C<'bills-2020-06/IMG01.tiff'>
 * create bundle with name normalised (remove directory and extension)
   C<'bundle/bills-2020-06--IMG01'>
-  valid extensions depend on what can be processed: .tiff, .pdf, .jpg
+  valid extensions depend on what can be processed: .tiff, .tif, .pdf, .jpg, .jpeg
 =end :list
 
 =cut
@@ -307,5 +304,7 @@ sub _create_bundle {
 		data => $data,
 	);
 }
+
+with qw(SSW::Role::JSONSerializable);
 
 1;

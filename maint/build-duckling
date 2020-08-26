@@ -1,0 +1,5 @@
+#!/bin/sh
+
+git submodule update --init --recursive vendor/duckling
+cd vendor/duckling
+stack build
