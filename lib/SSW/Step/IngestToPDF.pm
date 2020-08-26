@@ -45,7 +45,7 @@ sub run {
 	}
 
 	# TODO
-	$self->output( $file );
+	$self->output( $file->relative( $self->workflow->_workflow_dir ) );
 }
 
 with qw(SSW::Role::Stepable);

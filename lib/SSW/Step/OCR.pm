@@ -3,6 +3,7 @@ package SSW::Step::OCR;
 
 use Mu;
 use autodie qw(:all);
+use Path::Tiny;
 
 use SSW::Action::OCR;
 
@@ -14,12 +15,13 @@ sub run {
 	$output->parent->mkpath;
 
 	my $ocr = SSW::Action::OCR->new(
-		input => $self->previous_step->output,
+		input => path($self->previous_step->output)
+			->absolute( $self->workflow->_workflow_dir ),
 		output => $output,
 	);
 	$ocr->run;
 
-	$self->output( $output );
+	$self->output( $output->relative( $self->workflow->_workflow_dir ) );
 }
 
 with qw(SSW::Role::Stepable);

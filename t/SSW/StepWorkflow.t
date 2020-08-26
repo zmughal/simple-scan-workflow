@@ -61,9 +61,8 @@ subtest "Test workflow" => sub {
 		);
 		$workflow->run;
 
-		use JSON::MaybeXS qw(decode_json);
 		use Data::Dumper;
-		diag Dumper decode_json($workflow->_steps->[-1]->output->slurp_utf8);
+		diag Dumper $workflow->_steps->[-1]->read_meta;
 	}
 	pass;
 };

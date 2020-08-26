@@ -12,12 +12,8 @@ use SSW::Process::ExtractTime::DucklingFilter;
 sub run {
 	my ($self) = @_;
 
-	my $output = $self->_directory_for_step
-		->child($self->bundle->bundle_name . '.json');
-	$output->parent->mkpath;
-
-
-	my $pdf_file = $self->previous_step->output;
+	my $pdf_file = path($self->previous_step->output)
+		->absolute( $self->workflow->_workflow_dir );
 	my $sidecar_file = $pdf_file . '.txt';
 
 	my $text;
@@ -50,14 +46,14 @@ sub run {
 
 	my $name = "$data->{'extract-time'} - $data->{'extract-title'}";
 
-	$output->spew_utf8( $self->_json->encode( +{
+	my $output = +{
 		data => $data,
 		basename => $name,
-	}));
+	};
 
 	$self->output( $output );
 }
 
-with qw(SSW::Role::Stepable SSW::Role::JSONSerializable);
+with qw(SSW::Role::Stepable);
 
 1;
