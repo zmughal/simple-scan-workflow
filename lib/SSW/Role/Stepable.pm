@@ -25,12 +25,6 @@ sub run {
 	...
 }
 
-sub mark_done {
-	...
-}
-
-sub is_done {
-	...
-}
+with qw(SSW::Role::Stepable::Meta SSW::Role::Stepable::Doneable);
 
 1;

@@ -33,8 +33,10 @@ requires 'Path::Tiny';
 requires 'Readonly';
 requires 'Regexp::Assemble';
 requires 'Text::Template';
+requires 'Try::Tiny';
 requires 'Types::Path::Tiny';
 requires 'autodie';
+requires 'boolean';
 
 if( $^O ne 'MSWin32' ) {
     requires 'File::Rsync';
