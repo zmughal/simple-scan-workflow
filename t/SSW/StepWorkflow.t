@@ -26,13 +26,18 @@ my $br = SSW::Data::BundleRoot->new(
 my @files = (
 	{
 		src_name => '01_abc.tiff',
-		text => <<~EOF
+		text => <<~EOF,
 			The Title of the Document
 
 			There are some dates in here such as January 2nd, 2008. But we
 			can also talk about 1/23/2008. Or 3rd of Feb.
 			Or maybe the 29th of February.
 			EOF
+
+		expected_title => '2008-01-02 - The Title of the Documen',
+		# from
+		# - "January 2nd, 2008"
+		# - first 20 non-whitespace characters
 	},
 );
 
