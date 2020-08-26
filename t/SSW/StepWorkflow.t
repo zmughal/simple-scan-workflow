@@ -14,10 +14,12 @@ use TestDuckling;
 my $d = TestDuckling->new;
 $d->start_duckling;
 
-my $src_tmp_dir = path("/tmp/abc");
-	#Path::Tiny->tempdir( TEMPLATE => 'src-XXXXXX' );
-my $bundle_root_tmp_dir = path("/tmp/bundle-root-012");
-	#Path::Tiny->tempdir( TEMPLATE => 'bundle-root-XXXXXX' );
+my $src_tmp_dir =
+	#path("/tmp/abc");
+	Path::Tiny->tempdir( TEMPLATE => 'src-XXXXXX' );
+my $bundle_root_tmp_dir =
+	#path("/tmp/bundle-root-012");
+	Path::Tiny->tempdir( TEMPLATE => 'bundle-root-XXXXXX' );
 
 my $br = SSW::Data::BundleRoot->new(
 	bundle_root_path => $bundle_root_tmp_dir
@@ -55,6 +57,7 @@ for my $file_info (@files) {
 }
 
 subtest "Test workflow" => sub {
+	plan tests => scalar @files;
 	for my $file_info (@files) {
 		my $bundle = $br->create_or_find_bundle_for_file(
 			$file_info->{src},
@@ -66,10 +69,13 @@ subtest "Test workflow" => sub {
 		);
 		$workflow->run;
 
+
+		is $workflow->_steps->[-1]->output->{basename},
+			$file_info->{expected_title},
+			'got expected title';
 		use Data::Dumper;
-		diag Dumper $workflow->_steps->[-1]->read_meta;
+		diag Dumper $workflow->_steps->[-1]->output;
 	}
-	pass;
 };
 
 END {
