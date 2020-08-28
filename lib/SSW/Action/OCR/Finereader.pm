@@ -1,5 +1,5 @@
 package SSW::Action::OCR::Finereader;
-# ABSTRACT: «TODO»
+# ABSTRACT: Action to run ABBYY FineReader OCR
 
 use Moo;
 use CLI::Osprey;

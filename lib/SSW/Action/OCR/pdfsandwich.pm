@@ -1,5 +1,5 @@
 package SSW::Action::OCR::pdfsandwich;
-# ABSTRACT: «TODO»
+# ABSTRACT: Action to run pdfsandwich OCR pipeline
 
 use Moo;
 use CLI::Osprey;

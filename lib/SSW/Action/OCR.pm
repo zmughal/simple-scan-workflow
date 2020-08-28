@@ -1,5 +1,5 @@
 package SSW::Action::OCR;
-# ABSTRACT: «TODO»
+# ABSTRACT: A general OCR action
 
 use Moo;
 use CLI::Osprey;

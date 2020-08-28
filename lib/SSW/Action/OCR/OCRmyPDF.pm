@@ -1,5 +1,5 @@
 package SSW::Action::OCR::OCRmyPDF;
-# ABSTRACT: «TODO»
+# ABSTRACT: Action to run OCRmyPDF OCR pipeline
 
 use Mu;
 use CLI::Osprey;
