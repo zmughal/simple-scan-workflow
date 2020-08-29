@@ -1,5 +1,5 @@
 package SSW::Daemon::WatcherV1;
-# ABSTRACT: «TODO»
+# ABSTRACT: Daemon for running workflow V1
 
 use Modern::Perl;
 use Mu;

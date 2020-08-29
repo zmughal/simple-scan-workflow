@@ -1,5 +1,5 @@
 package SSW::Role::Daemonable;
-# ABSTRACT: «TODO»
+# ABSTRACT: Role for controlling daemons
 
 use Moo::Role;
 use CLI::Osprey;
