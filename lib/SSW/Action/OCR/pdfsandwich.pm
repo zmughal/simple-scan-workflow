@@ -4,12 +4,14 @@ package SSW::Action::OCR::pdfsandwich;
 use Moo;
 use CLI::Osprey;
 use Path::Tiny;
+use Log::Any qw($log);
 
 sub run {
 	my ($self) = @_;
 	my ($input, $output) = ( path($self->input), path($self->output) );
 	-f $input or die "input file must exist";
 
+	$log->info('Running pdfsandwich', { input => "$input", output => "$output" });
 	my $exit = system(
 			qw(pdfsandwich),
 			qw(-nopreproc),

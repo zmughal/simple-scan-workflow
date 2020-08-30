@@ -6,9 +6,12 @@ use autodie qw(:all);
 use Path::Tiny;
 
 use SSW::Action::OCR;
+use Log::Any qw($log);
 
 sub run {
 	my ($self) = @_;
+
+	$log->info("Running Step::OCR with bundle @{[ $self->bundle->bundle_name ]}");
 
 	my $output = $self->_directory_for_step
 		->child($self->bundle->bundle_name . '-ocr.pdf');
