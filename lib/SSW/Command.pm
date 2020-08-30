@@ -1,5 +1,5 @@
 package SSW::Command;
-# ABSTRACT: «TODO»
+# ABSTRACT: Top-level CLI
 
 use Modern::Perl;
 use Path::Tiny;

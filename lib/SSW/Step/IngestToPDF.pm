@@ -9,9 +9,12 @@ use File::chdir;
 use Capture::Tiny qw(capture_stdout);
 use Path::Tiny;
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
+use Log::Any qw($log);
 
 sub run {
 	my ($self) = @_;
+
+	$log->info("Running Step::IngestToPDF with bundle @{[ $self->bundle->bundle_name ]}");
 
 	my $zip = Archive::Zip->new;
 	$zip->read( $self->bundle->_bundle_archive->stringify ) == AZ_OK
@@ -24,7 +27,7 @@ sub run {
 		$zip->extractMemberWithoutPaths( $self->bundle->data_path );
 		my $path_to_temp = $temp_dir->child(path($self->bundle->data_path)->basename);
 
-		die "Unable to extract to temporary directory" unless -f $path_to_temp;
+		die $log->error("Unable to extract to temporary directory") unless -f $path_to_temp;
 
 		$file = $self->_directory_for_step->child($self->bundle->bundle_name . '.pdf');
 		$file->parent->mkpath;
@@ -38,7 +41,7 @@ sub run {
 			);
 		}
 	} else {
-		die <<~EOF;
+		die $log->error(<<~EOF);
 		Do not know how to ingest bundle @{[ $self->bundle->data_name ]}
 		with extension @{[ $self->bundle->data_extension ]}
 		EOF

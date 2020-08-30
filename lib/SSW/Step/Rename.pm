@@ -4,6 +4,7 @@ package SSW::Step::Rename;
 use Moo;
 use autodie qw(:all);
 use Path::Tiny;
+use Log::Any qw($log);
 
 use SSW::Process::pdftotext;
 use SSW::Process::ExtractPDFTitle::FromBeginning;
@@ -11,6 +12,8 @@ use SSW::Process::ExtractTime::DucklingFilter;
 
 sub run {
 	my ($self) = @_;
+
+	$log->info("Running Step::Rename with bundle @{[ $self->bundle->bundle_name ]}");
 
 	my $pdf_file = path($self->previous_step->output)
 		->absolute( $self->workflow->_workflow_dir );

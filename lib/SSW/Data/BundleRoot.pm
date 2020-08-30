@@ -5,6 +5,8 @@ use Mu;
 use Types::Path::Tiny qw(AbsPath AbsFile);
 use File::Copy::Recursive;
 
+use Log::Any qw($log);
+
 use DBI;
 use DBD::SQLite ();
 use Digest::SHA;
@@ -158,11 +160,11 @@ sub create_or_find_bundle_for_file {
 	my ($self, $file, $src_relative_to) = @_;
 
 	if( $file !~ $FILE_EXTENSIONS_RE ) {
-		die "File does not have extension: file: $file ; extensions: [ @FILE_EXTENSIONS ]";
+		die $log->error("File does not have extension: file: $file ; extensions: [ @FILE_EXTENSIONS ]");
 	}
 
 	if( ! $src_relative_to->realpath->subsumes($file->realpath) ) {
-		die "File is not subsumed by source path: file: $file ; source: $src_relative_to";
+		die $log->error("File is not subsumed by source path: file: $file ; source: $src_relative_to");
 	}
 
 	my $sum = $self->_get_sha256_for_filename($file);
@@ -170,6 +172,7 @@ sub create_or_find_bundle_for_file {
 	my $bundle;
 	if( my $data = $self->_dbh->selectrow_hashref($self->_sth_fetch_bundle_by_sha256, {}, $sum ) ) {
 		my $final_path = $self->_path_for_bundle_name($data->{bundle_name});
+		$log->info("Bundle found with checksum $sum and name $data->{bundle_name}");
 		$bundle = SSW::Data::Bundle->new( bundle_path => $final_path,
 			data => $data,
 		);
@@ -236,6 +239,8 @@ Given a file: e.g., C</path/to/process/bills-2020-06/IMG01.tiff>
 =cut
 sub _create_bundle {
 	my ($self, $file, $src_relative_to, $sum) = @_;
+
+	$log->info("Creating bundle for $file with sum $sum");
 
 	my $tmpdir = Path::Tiny->tempdir;
 
