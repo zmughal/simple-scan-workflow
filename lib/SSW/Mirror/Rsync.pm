@@ -1,4 +1,4 @@
-package SSW::Connection::Rsync;
+package SSW::Mirror::Rsync;
 # ABSTRACT: An Rsync connection
 
 use Mu;

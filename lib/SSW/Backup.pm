@@ -11,7 +11,7 @@ use Path::Tiny;
 use ShellQuote::Any;
 
 use SSW::Connection::SSH;
-use SSW::Connection::Rsync;
+use SSW::Mirror::Rsync;
 use SSW::Connection::FTP::CurlFtpFS;
 
 option config_path => (
@@ -82,7 +82,7 @@ sub run {
 
 	for my $source (@{ $self->config->{sources} }) {
 		for my $destination (@{ $self->config->{destinations} }) {
-			my $rsync = SSW::Connection::Rsync->new(
+			my $rsync = SSW::Mirror::Rsync->new(
 				source_connection => $self->select_preferred_connection(
 					$self->host_to_connections->{$source->{host}},
 				),
