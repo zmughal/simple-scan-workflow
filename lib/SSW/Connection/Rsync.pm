@@ -8,7 +8,7 @@ use Net::EmptyPort qw(empty_port);
 
 use constant RSYNC_BIN => 'rsync';
 
-use constant RSYNC_OPTS => qw(-avzP --stats);
+use constant RSYNC_OPTS => qw(-a -vzP --stats);
 
 ro source_connection =>;
 
@@ -42,7 +42,7 @@ lazy rsync_command => sub {
 			my $tunnel_cmd = sub {
 				my (@cmd) = @_;
 				return (
-					qw(ssh),
+					$src_connection->SSH_BIN,
 					qw(-t),
 					qw(-A),
 					@tunnel,
@@ -76,10 +76,10 @@ lazy rsync_command => sub {
 					RSYNC_OPTS,
 
 					(
-						qw(-e), shell_quote( [
+						qw(-e), shell_quote([ shell_quote( [
 							$dst_connection->SSH_BIN,
 							@ssh_on_src_to_dst_through_tunnel_opts,
-						] ),
+						] ) ] ),
 					),
 
 					$src_connection->normalize_path( $self->source_path ),
@@ -92,12 +92,14 @@ lazy rsync_command => sub {
 			return [
 				@{ $src_connection->ssh_command },
 
+				shell_quote( [
 				RSYNC_BIN,
 				RSYNC_OPTS,
 
 				$src_connection->normalize_path($self->source_path),
 
 				$dst_connection->normalize_path($self->destination_path),
+				] )
 			];
 		}
 	} else {
