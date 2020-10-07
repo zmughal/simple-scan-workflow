@@ -17,3 +17,7 @@ native:
       - rsync
       - img2pdf
       - imagemagick # for convert
+      # backup
+      - rsync          #  rsync
+      - openssh-client #  ssh
+      - curlftpfs      #  curlftpfs
