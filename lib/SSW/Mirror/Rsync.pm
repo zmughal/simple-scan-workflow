@@ -1,7 +1,9 @@
 package SSW::Mirror::Rsync;
 # ABSTRACT: An Rsync connection
 
+use Modern::Perl;
 use Mu;
+use JSON::MaybeXS;
 use boolean;
 use File::Which;
 use ShellQuote::Any;
@@ -155,6 +157,14 @@ sub try_connection_to_localfs {
 	$connection;
 }
 
+sub mirror {
+	my ($self) = @_;
+	#use DDP; p $rsync->rsync_command;
+	say "==\n", JSON->new->allow_nonref->convert_blessed->encode( $self->rsync_command );
+	0 == system(
+		@{ $self->rsync_command }
+	) or die "Command failed";
+}
 
 after new => sub {
 	which( RSYNC_BIN ) or die "Missing executable @{[ RSYNC_BIN ]}\n";

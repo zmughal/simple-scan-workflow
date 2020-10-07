@@ -2,11 +2,11 @@ package SSW::Backup;
 # ABSTRACT: Backup
 
 use Modern::Perl;
+use Try::Tiny;
 use boolean;
 use Mu;
 use CLI::Osprey;
 use YAML::XS ();
-use JSON::MaybeXS;
 use Path::Tiny;
 use ShellQuote::Any;
 
@@ -82,21 +82,27 @@ sub run {
 
 	for my $source (@{ $self->config->{sources} }) {
 		for my $destination (@{ $self->config->{destinations} }) {
-			my $rsync = SSW::Mirror::Rsync->new(
-				source_connection => $self->select_preferred_connection(
-					$self->host_to_connections->{$source->{host}},
-				),
-				destination_connection => $self->select_preferred_connection(
-					$self->host_to_connections->{$destination->{host}},
-				),
-				source_path => $source->{path},
-				destination_path => $destination->{path},
-			);
-			#use DDP; p $rsync->rsync_command;
-			say "==\n", JSON->new->allow_nonref->convert_blessed->encode( $rsync->rsync_command );
-			0 == system(
-				@{ $rsync->rsync_command }
-			) or die "Command failed";
+			for my $mirror_class (qw(SSW::Mirror::Rsync)) {
+				my $mirror = $mirror_class->new(
+					source_connection => $self->select_preferred_connection(
+						$self->host_to_connections->{$source->{host}},
+					),
+					destination_connection => $self->select_preferred_connection(
+						$self->host_to_connections->{$destination->{host}},
+					),
+					source_path => $source->{path},
+					destination_path => $destination->{path},
+				);
+				my $success = try {
+					$mirror->mirror;
+					1;
+				} catch {
+					warn "Could not mirror using $mirror_class: $_\n";
+					undef;
+				};
+
+				last if $success;
+			}
 		}
 	}
 }
