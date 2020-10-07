@@ -1,0 +1,27 @@
+hosts:
+  - host: host1.local
+    ssh:
+      login_name: user1
+      port: 2222
+      identity_file: id_backup
+  - host: host2.local
+    ssh:
+      login_name: user2
+      identity_file: id_backup
+  - host: host3.local
+    ftp:
+      login_name: user3
+      mount_point: ~/fs/ftp_host3
+      # login info in netrc
+sources:
+  - host: host1.local
+    path:
+      C:\Users\user1\Documents\source1
+  - host: host2.local
+    path:
+      /Users/user2/Documents/source2
+destinations:
+  - host: host2.local
+    path: /Volumes/External/backup
+  - host: host3.local
+    path: /backup
