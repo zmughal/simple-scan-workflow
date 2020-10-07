@@ -5,6 +5,7 @@ use Mu;
 use File::Which;
 use ShellQuote::Any;
 use Net::EmptyPort qw(empty_port);
+use Path::Tiny;
 
 use constant RSYNC_BIN => 'rsync';
 
@@ -103,9 +104,15 @@ lazy rsync_command => sub {
 			];
 		}
 	} else {
+		my $dst_not_local = ! $self->destination_connection->isa('SSW::Connection::LocalFS');
+		my $dir = path("~/.tmp-for-backup");
+		$dir->mkpath;
+		my $tempdir = Path::Tiny->tempdir( DIR => $dir );
 		return [
 			RSYNC_BIN,
 			RSYNC_OPTS,
+
+			$dst_not_local ? ( qw(-T), $tempdir ) : (),
 
 			1 == @ssh_connections ? (
 				qw(-e), shell_quote( [
