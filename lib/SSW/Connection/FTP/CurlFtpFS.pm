@@ -1,4 +1,4 @@
-package SSW::Connection::FTP;
+package SSW::Connection::FTP::CurlFtpFS;
 # ABSTRACT: An FTP connection via Curlftpfs
 
 use Mu;
@@ -53,7 +53,7 @@ sub check_remote_directory {
 
 	NOTE: Create the remote directory if creating a new destination:
 	  lftp @{[ $self->host ]} -e 'mkdir $path'
-	EOF
+EOF
 }
 
 sub mount {

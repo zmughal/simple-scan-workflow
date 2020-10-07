@@ -133,7 +133,7 @@ lazy rsync_command => sub {
 sub try_connection_to_localfs {
 	my ($self, $connection) = @_;
 
-	if( $connection->isa('SSW::Connection::FTP' ) ) {
+	if( $connection->isa('SSW::Connection::FTP::CurlFtpFS' ) ) {
 		return $connection->to_localfs_connection;
 	}
 

@@ -12,7 +12,7 @@ use ShellQuote::Any;
 
 use SSW::Connection::SSH;
 use SSW::Connection::Rsync;
-use SSW::Connection::FTP;
+use SSW::Connection::FTP::CurlFtpFS;
 
 option config_path => (
 	is => 'ro',
@@ -56,7 +56,7 @@ lazy host_to_connections => sub {
 		}
 
 		if( exists $host->{ftp} ) {
-			$host_to_connections->{$hostname}{ftp} = SSW::Connection::FTP->new(
+			$host_to_connections->{$hostname}{ftp} = SSW::Connection::FTP::CurlFtpFS->new(
 				host => $hostname,
 				%{ $host->{ftp} },
 			);
