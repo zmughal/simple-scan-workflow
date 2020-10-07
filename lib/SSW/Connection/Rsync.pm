@@ -2,6 +2,7 @@ package SSW::Connection::Rsync;
 # ABSTRACT: An Rsync connection
 
 use Mu;
+use boolean;
 use File::Which;
 use ShellQuote::Any;
 use Net::EmptyPort qw(empty_port);
@@ -22,6 +23,7 @@ ro destination_path => ;
 lazy rsync_command => sub {
 	my ($self) = @_;
 
+	die "Destination does not support utime(2)" unless $self->supports_utime( $self->destination_connection );
 
 	my $src_connection = $self->source_connection;
 	$src_connection = $self->try_connection_to_localfs($src_connection);
@@ -129,6 +131,19 @@ lazy rsync_command => sub {
 
 	}
 };
+
+sub supports_utime {
+	my ($self, $connection) = @_;
+
+	if( $connection->isa('SSW::Connection::SSH' ) ) {
+		return true;
+	} elsif( $connection->isa('SSW::Connection::FTP::CurlFtpFS') ) {
+		# CurlFtpFS does not support utime. Silently fails
+		# <https://fossies.org/dox/curlftpfs-0.9.2/ftpfs_8c_source.html#l00992>.
+		return false;
+	}
+}
+
 
 sub try_connection_to_localfs {
 	my ($self, $connection) = @_;
