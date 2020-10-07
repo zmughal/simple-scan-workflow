@@ -112,6 +112,7 @@ lazy rsync_command => sub {
 			RSYNC_BIN,
 			RSYNC_OPTS,
 
+			# to avoid "rsync: mkstemp failed: Permission denied" error
 			$dst_not_local ? ( qw(-T), $tempdir ) : (),
 
 			1 == @ssh_connections ? (
