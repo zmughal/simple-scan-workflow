@@ -1,5 +1,5 @@
 package SSW::Mirror::Rsync;
-# ABSTRACT: An Rsync connection
+# ABSTRACT: An Rsync mirror
 
 use Modern::Perl;
 use Mu;
@@ -32,6 +32,10 @@ lazy rsync_command => sub {
 
 	my $dst_connection = $self->destination_connection;
 	$dst_connection = $self->try_connection_to_localfs($dst_connection);
+
+	for my $connection ($src_connection, $dst_connection) {
+		die "Connection not rsyncable" unless $connection->can('rsync_arg');
+	}
 
 	my @ssh_connections = grep { $_->isa('SSW::Connection::SSH') } ($src_connection, $dst_connection);
 	if( 2 == @ssh_connections ) {
@@ -144,6 +148,8 @@ sub supports_utime {
 		# <https://fossies.org/dox/curlftpfs-0.9.2/ftpfs_8c_source.html#l00992>.
 		return false;
 	}
+
+	return false;
 }
 
 
