@@ -81,7 +81,9 @@ sub get_lftp_open_command {
 
 sub mirror {
 	my ($self) = @_;
-	say "==\n", JSON->new->allow_nonref->convert_blessed->encode( $self->lftp_command );
+	my $machine = $self->destination_connection->lookup_netrc;
+	say "==\n", JSON->new->allow_nonref->convert_blessed->encode( $self->lftp_command )
+		=~ s/\Q@{[ $machine->password ]}\E/***/gr;
 	0 == system(
 		@{ $self->lftp_command }
 	) or die "Command failed";
