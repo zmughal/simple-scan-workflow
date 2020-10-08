@@ -26,3 +26,9 @@ native:
   msys2-msys:
     packages:
       - lftp
+      - rsync
+      - openssh     # for SSH server
+      - cygrunsrv   # for SSH server
+  msys2-mingw64:
+    packages:
+      - mingw-w64-x86_64-editrights # for SSH server
