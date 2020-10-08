@@ -3,26 +3,21 @@ package SSW::Connection::FTP::CurlFtpFS;
 
 use Mu;
 use File::Which;
-use Net::Netrc;
-use Net::FTP;
 use Path::Tiny;
 use Sys::Filesystem ();
 use List::AllUtils qw(first);
 
 use SSW::Connection::LocalFS;
 
+extends qw(SSW::Connection::FTP);
+
 use constant CURLFTPFS_BIN => 'curlftpfs';
-
-ro host => ;
-
-ro login_name => ;
 
 ro mount_point => ;
 
 lazy curlftpfs_command => sub {
 	my ($self) = @_;
-	Net::Netrc->lookup( $self->host, $self->login_name )
-		or die "FTP account not in .netrc: @{[ $self->login_name ]}\@@{[ $self->host ]}\n";
+	$self->lookup_netrc;
 
 	return [
 		CURLFTPFS_BIN,
@@ -30,31 +25,6 @@ lazy curlftpfs_command => sub {
 		path($self->mount_point),
 	];
 };
-
-lazy ftp_uri => sub {
-	my ($self) = @_;
-
-	"ftp://@{[ $self->login_name ]}\@@{[ $self->host ]}/",
-};
-
-sub check_remote_directory {
-	my ($self, $path) = @_;
-	# NOTE:
-	# create the remote directory if creating a new destination
-	#   lftp $host -e 'mkdir $path'
-	my $ftp = Net::FTP->new( $self->host )
-		or die "Can not connect to @{[ $self->host ]}\n";
-	$ftp->login( $self->login_name )
-		or die "Can not login: @{[ $ftp->message ]}";
-
-	$ftp->cwd($path)
-		or die <<~EOF;
-	Remote directory does not exist: $path
-
-	NOTE: Create the remote directory if creating a new destination:
-	  lftp @{[ $self->host ]} -e 'mkdir $path'
-EOF
-}
 
 sub mount {
 	my ($self) = @_;

@@ -56,7 +56,7 @@ lazy host_to_connections => sub {
 		}
 
 		if( exists $host->{ftp} ) {
-			$host_to_connections->{$hostname}{ftp} = SSW::Connection::FTP::CurlFtpFS->new(
+			$host_to_connections->{$hostname}{ftp} = SSW::Connection::FTP->new(
 				host => $hostname,
 				%{ $host->{ftp} },
 			);
