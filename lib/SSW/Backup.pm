@@ -11,8 +11,10 @@ use Path::Tiny;
 use ShellQuote::Any;
 
 use SSW::Connection::SSH;
-use SSW::Mirror::Rsync;
 use SSW::Connection::FTP::CurlFtpFS;
+
+use SSW::Mirror::Rsync;
+use SSW::Mirror::LFTP;
 
 option config_path => (
 	is => 'ro',
@@ -82,7 +84,7 @@ sub run {
 
 	for my $source (@{ $self->config->{sources} }) {
 		for my $destination (@{ $self->config->{destinations} }) {
-			for my $mirror_class (qw(SSW::Mirror::Rsync)) {
+			for my $mirror_class (qw(SSW::Mirror::Rsync SSW::Mirror::LFTP)) {
 				my $mirror = $mirror_class->new(
 					source_connection => $self->select_preferred_connection(
 						$self->host_to_connections->{$source->{host}},

@@ -8,6 +8,7 @@ native:
       - ocrmypdf # for img2pdf
       #- imagemagick # for convert
       # brew install blogabe/homebrew-xplanet/imagemagick -s --with-pango
+      - lftp
   debian:
     packages:
       - fswatch
@@ -21,3 +22,7 @@ native:
       - rsync          #  rsync
       - openssh-client #  ssh
       - curlftpfs      #  curlftpfs
+      - lftp
+  msys2-msys:
+    packages:
+      - lftp
