@@ -40,6 +40,8 @@ lazy rsync_command => sub {
 	my @ssh_connections = grep { $_->isa('SSW::Connection::SSH') } ($src_connection, $dst_connection);
 	if( 2 == @ssh_connections ) {
 		if( $src_connection->host ne $dst_connection->host ) {
+			# idea for rsync mirroring over SSH:
+			# <https://unix.stackexchange.com/questions/183504/how-to-rsync-files-between-two-remotes/510262#510262>
 			my $free_port = empty_port();
 
 			my $dst_hostport = join ":", map { $dst_connection->$_ } qw(host port);
