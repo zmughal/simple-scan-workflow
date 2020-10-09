@@ -93,10 +93,12 @@ lazy rsync_command => sub {
 						] ) ] ),
 					),
 
-					$src_connection->normalize_path( $self->source_path ),
+					shell_quote( [ $src_connection->normalize_path( $self->source_path ) ] ),
 
+					shell_quote([
 					$dst_connection->rsync_arg( $self->destination_path )
 						=~ s/^\Q@{[ $dst_connection->host ]}:\E/localhost:/r,
+					])
 				)
 			];
 		} else {
