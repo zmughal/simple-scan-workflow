@@ -5,6 +5,7 @@ use Modern::Perl;
 use Mu;
 use ShellQuote::Any;
 use JSON::MaybeXS;
+use Log::Any qw($log);
 
 use SSW::Connection::LocalFS;
 
@@ -81,9 +82,14 @@ sub get_lftp_open_command {
 
 sub mirror {
 	my ($self) = @_;
+	$log->info("Trying @{[ ref $self ]} mirror");
 	my $machine = $self->destination_connection->lookup_netrc;
-	say "==\n", JSON->new->allow_nonref->convert_blessed->encode( $self->lftp_command )
-		=~ s/\Q@{[ $machine->password ]}\E/***/gr;
+
+	$log->debug(
+		"Command: ".
+		( JSON->new->allow_nonref->convert_blessed->encode( $self->lftp_command )
+			=~ s/\Q@{[ $machine->password ]}\E/***/gr )
+	) if $log->is_debug;
 	0 == system(
 		@{ $self->lftp_command }
 	) or die "Command failed";

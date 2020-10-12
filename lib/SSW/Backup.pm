@@ -16,6 +16,8 @@ use SSW::Connection::FTP::CurlFtpFS;
 use SSW::Mirror::Rsync;
 use SSW::Mirror::LFTP;
 
+use Log::Any::Adapter;
+
 option config_path => (
 	is => 'ro',
 	required => 1,
@@ -71,6 +73,8 @@ lazy host_to_connections => sub {
 sub run {
 	my ($self) = @_;
 	use DDP; p $self->config;
+
+	Log::Any::Adapter->set('Screen', min_level => 'trace' );
 
 	if( $self->check_host_path ) {
 		for my $destination (@{ $self->config->{destinations} }) {

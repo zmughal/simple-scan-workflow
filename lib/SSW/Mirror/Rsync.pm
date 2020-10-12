@@ -9,6 +9,7 @@ use File::Which;
 use ShellQuote::Any;
 use Net::EmptyPort qw(empty_port);
 use Path::Tiny;
+use Log::Any qw($log);
 
 use constant RSYNC_BIN => 'rsync';
 
@@ -81,6 +82,7 @@ lazy rsync_command => sub {
 				shell_quote([ qw(echo PASSED)] ),
 			) ) or die "Could not create tunneled SSH connection through localhost\n";
 
+			$log->info("ssh tunnel 'rsync src tunnel-dst'");
 			return [
 				$tunnel_cmd->(
 					RSYNC_BIN,
@@ -102,6 +104,7 @@ lazy rsync_command => sub {
 				)
 			];
 		} else {
+			$log->info( "ssh 'rsync src dst'");
 			return [
 				@{ $src_connection->ssh_command },
 
@@ -120,6 +123,8 @@ lazy rsync_command => sub {
 		my $dir = path("~/.tmp-for-backup");
 		$dir->mkpath;
 		my $tempdir = Path::Tiny->tempdir( DIR => $dir );
+
+		$log->info("rsync src dst");
 		return [
 			RSYNC_BIN,
 			RSYNC_OPTS,
@@ -170,7 +175,15 @@ sub try_connection_to_localfs {
 sub mirror {
 	my ($self) = @_;
 	#use DDP; p $rsync->rsync_command;
-	say "==\n", JSON->new->allow_nonref->convert_blessed->encode( $self->rsync_command );
+	$log->info("Trying @{[ ref $self ]} mirror for: "
+		. $self->stringify_connection_path($self->source_connection, $self->source_path)
+		. " => "
+		. $self->stringify_connection_path($self->destination_connection, $self->destination_path)
+	) if $log->is_info;
+	$log->debug(
+		"Command: ".
+		JSON->new->allow_nonref->convert_blessed->encode( $self->rsync_command )
+	) if $log->is_debug;
 	0 == system(
 		@{ $self->rsync_command }
 	) or die "Command failed";
@@ -179,5 +192,10 @@ sub mirror {
 after new => sub {
 	which( RSYNC_BIN ) or die "Missing executable @{[ RSYNC_BIN ]}\n";
 };
+
+sub stringify_connection_path {
+	my ($self, $connection, $path) = @_;
+	return "@{[ $connection->host ]}:( @{[ $path ]} )";
+}
 
 1;
