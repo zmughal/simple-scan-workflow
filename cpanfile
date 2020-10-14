@@ -23,6 +23,7 @@ requires 'List::AllUtils';
 requires 'List::Util', 'v1.55.0';
 requires 'List::UtilsBy';
 requires 'Log::Any';
+requires 'Log::Any::Adapter';
 requires 'Modern::Perl';
 requires 'Moo';
 requires 'Moo::Role';
