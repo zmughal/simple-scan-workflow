@@ -9,6 +9,7 @@ use CLI::Osprey;
 use YAML::XS ();
 use Path::Tiny;
 use ShellQuote::Any;
+use Capture::Tiny qw(capture_stdout);
 
 use SSW::Connection::SSH;
 use SSW::Connection::FTP::CurlFtpFS;
@@ -75,6 +76,14 @@ sub run {
 	use DDP; p $self->config;
 
 	Log::Any::Adapter->set('Screen', min_level => 'trace' );
+
+	my ($agent_out) = capture_stdout {
+		system(qw( ssh-agent -s ));
+	};
+	while( $agent_out =~ /^(SSH_AUTH_SOCK|SSH_AGENT_PID)=([^;]+)/mg ) {
+		$ENV{$1} = $2;
+	}
+
 
 	if( $self->check_host_path ) {
 		for my $destination (@{ $self->config->{destinations} }) {
